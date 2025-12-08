@@ -16,11 +16,12 @@
   .header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:12px;z-index:10;}
   .title{font-weight:700;font-size:16px;color:#111;}
   .controls{display:flex;gap:10px;align-items:center;}
-  .icon-btn{width:44px;height:44px;border-radius:50%;display:inline-grid;place-items:center;border:none;background:transparent;cursor:pointer;box-shadow:0 4px 12px rgba(16,24,40,0.04);}
-  .icon-btn:active{transform:scale(.96);}
+  .icon-btn{width:44px;height:44px;border-radius:50%;display:inline-grid;place-items:center;border:none;background:transparent;cursor:pointer;box-shadow:0 4px 12px rgba(16,24,40,0.04);padding:6px;}
+  .icon-btn:active{transform:scale(.96);outline:none;}
+  .icon-btn[hidden]{display:none;}
   .main{display:flex;flex:1;align-items:center;justify-content:center;padding:8px;position:relative;}
-  #bigButton{display:flex;align-items:center;justify-content:center;user-select:none;touch-action:manipulation;border-radius:50%;border:8px solid rgba(0,0,0,0.12);background:linear-gradient(180deg,#fff,#f2f6ff);box-shadow:0 20px 40px rgba(2,6,23,0.08);font-weight:800;color:#111;width:min(86vmin,520px);height:min(86vmin,520px);max-width:92vw;max-height:92vw;font-size:clamp(28px,9vmin,92px);}
-  .meta{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;color:var(--muted);font-size:14px;background:rgba(255,255,255,0.6);padding:6px 10px;border-radius:999px;box-shadow:0 6px 18px rgba(16,24,40,0.04);}
+  #bigButton{display:flex;align-items:center;justify-content:center;user-select:none;touch-action:manipulation;border-radius:50%;border:8px solid rgba(0,0,0,0.12);background:linear-gradient(180deg,#fff,#f2f6ff);box-shadow:0 20px 40px rgba(2,6,23,0.08);font-weight:800;color:#111;width:min(86vmin,520px);height:min(86vmin,520px);max-width:92vw;max-height:92vw;font-size:clamp(28px,9vmin,92px);cursor:pointer;}
+  .meta{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;color:var(--muted);font-size:14px;background:rgba(255,255,255,0.6);padding:6px 10px;border-radius:999px;box-shadow:0 6px 18px rgba(16,24,40,0.04);z-index:5;}
   #listPanel{position:fixed;right:14px;top:74px;bottom:14px;width:340px;max-width:calc(100%-28px);border-radius:12px;background:var(--panel-bg);box-shadow:0 20px 50px rgba(2,6,23,0.12);overflow:auto;padding:12px;z-index:60;transform:translateX(12px) scale(.995);transition:opacity .18s ease,transform .18s ease;opacity:0;pointer-events:none;}
   #listPanel.open{opacity:1;pointer-events:auto;transform:translateX(0) scale(1);}
   #listPanel::-webkit-scrollbar{width:0;height:0;} #listPanel{-ms-overflow-style:none;scrollbar-width:none;}
@@ -30,8 +31,14 @@
   #tapList li{margin:10px 0;padding:8px;border-radius:8px;background:rgba(255,255,255,0.7);box-shadow:0 4px 10px rgba(2,6,23,0.04);}
   .tap-ts{font-weight:600;font-size:13px;color:#111;}
   .tap-interval{font-size:13px;color:var(--muted);margin-top:4px;}
-  @media (max-width:900px){#listPanel{right:10px;width:92%;top:84px;bottom:12px;}#bigButton{width:min(86vmin,420px);height:min(86vmin,420px);}}
+  @media (max-width:900px){#listPanel{right:10px;width:92%;top:84px;bottom:12px;}#bigButton{width:min(86vmin,420px);height:min(86vmin,420px);} }
   .ico{width:22px;height:22px;}
+  /* iOS install hint overlay */
+  .ios-hint {
+    position:fixed;left:20px;right:20px;bottom:24px;background:linear-gradient(180deg,#fff,#f8fbff);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.14);z-index:200;display:none;align-items:center;gap:10px;font-size:14px;
+  }
+  .ios-hint.show{display:flex;}
+  .ios-hint .close{margin-left:auto;border:none;background:transparent;cursor:pointer;padding:6px;}
 </style>
 </head>
 <body>
@@ -39,14 +46,20 @@
     <div class="header">
       <div class="title">Tap Timer</div>
       <div class="controls" role="toolbar" aria-label="controls">
-        <button id="saveBtn" class="icon-btn" title="Save/download JSON">
+        <button id="saveBtn" class="icon-btn" title="Save/download JSON" aria-label="Save session">
           <svg class="ico" viewBox="0 0 24 24"><path fill="#111" d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4v-6h3l-5-5z"/></svg>
         </button>
-        <button id="resetBtn" class="icon-btn" title="Reset session">
+        <button id="resetBtn" class="icon-btn" title="Reset session" aria-label="Reset session">
           <svg class="ico" viewBox="0 0 24 24"><path fill="#111" d="M13 3a9 9 0 1 0 8.95 8H19a7 7 0 1 1-6.93-6v3l4-4-4-4v3z"/></svg>
         </button>
-        <button id="listBtn" class="icon-btn" title="Show session list">
+        <button id="listBtn" class="icon-btn" title="Show session list" aria-label="Show list">
           <svg class="ico" viewBox="0 0 24 24"><path fill="#111" d="M3 13h2v-2H3v2zm0-6h2V5H3v2zm4 6h14v-2H7v2zm0-6h14V5H7v2zM3 19h2v-2H3v2z"/></svg>
+        </button>
+
+        <!-- Install button (hidden until available) -->
+        <button id="installBtn" class="icon-btn" title="Install app" aria-label="Install app" hidden>
+          <!-- cloud-download icon -->
+          <svg class="ico" viewBox="0 0 24 24"><path fill="#111" d="M19.35 10.04A7 7 0 0 0 5.64 9.6 5 5 0 0 0 7 19h5v-6h-2l3-4 3 4h-2v6h5a3 3 0 0 0 0-6c-.15 0-.3.01-.45.04z"/></svg>
         </button>
       </div>
     </div>
@@ -56,6 +69,7 @@
       <div class="meta" aria-hidden="false">
         <div>Clicks: <strong id="countDisplay">0</strong></div>
         <div>Last interval: <span id="sinceLast" class="muted">—</span></div>
+        <!-- vibration support indicator appended here by JS -->
       </div>
     </div>
   </div>
@@ -72,6 +86,15 @@
     <div id="listContent" style="margin-bottom:8px;"><div class="muted">Tap the big button to record session. Durations shown are how long each count value was active.</div></div>
     <ol id="tapList" aria-live="polite"></ol>
   </aside>
+
+  <!-- iOS install hint -->
+  <div id="iosHint" class="ios-hint" role="dialog" aria-hidden="true">
+    <div>
+      To install this app on iOS: tap <strong>Share</strong> then choose <strong>Add to Home Screen</strong>.
+    </div>
+    <button id="closeIosHint" class="close" aria-label="Close">✕</button>
+  </div>
+
 <script>
 /* Service worker registration (keeps PWA behavior) */
 if ('serviceWorker' in navigator) {
@@ -94,6 +117,10 @@ const listBtn = document.getElementById('listBtn');
 const listPanel = document.getElementById('listPanel');
 const listContent = document.getElementById('listContent');
 const closeList = document.getElementById('closeList');
+const installBtn = document.getElementById('installBtn');
+const iosHint = document.getElementById('iosHint');
+const closeIosHint = document.getElementById('closeIosHint');
+
 let currentSession = { createdAt: null, timestamps: [] };
 
 /* Add small vibration-capability indicator inside .meta (if not already present) */
@@ -123,7 +150,6 @@ function ensureAudioContext() {
     if (!AC) return null;
     audioCtx = new AC();
   }
-  // resume may return a Promise; call it but don't await (must remain in gesture)
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume().catch(()=>{});
   }
@@ -137,7 +163,6 @@ function playTapSound() {
   const g = ctx.createGain();
   o.type = 'square';
   o.frequency.value = 1200;
-  // very short percussive envelope
   g.gain.setValueAtTime(0.0001, now);
   g.gain.exponentialRampToValueAtTime(0.5, now + 0.006);
   g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
@@ -151,7 +176,6 @@ function playTapSound() {
 function doVibrate() {
   if (!supportsVibrate || isIOS) return false;
   try {
-    // pattern: vibrate - pause - vibrate to feel like a tap
     navigator.vibrate([20, 40, 20]);
     return true;
   } catch (e) {
@@ -186,29 +210,22 @@ function formatDuration(ms){
 }
 function formatTimestamp(ms){ return new Date(ms).toLocaleString(); }
 
-/* Register tap: record timestamp, play sound, vibrate
-   Keep all vibration/audio calls synchronous in the user gesture handler.
-*/
-let _lastTrigger = 0; // debounce to avoid duplicate events (some platforms fire pointerdown+touchstart+click)
+/* Register tap: record timestamp, play sound, vibrate */
+let _lastTrigger = 0;
 function registerTapFromGesture(evType){
   const nowMs = Date.now();
-  if (nowMs - _lastTrigger < 40) return; // ignore duplicates within 40ms
+  if (nowMs - _lastTrigger < 40) return;
   _lastTrigger = nowMs;
 
-  // Immediately trigger vibration (synchronous)
   const vibOk = doVibrate();
-
-  // Trigger audio; resume will be attempted but not awaited (keeps it synchronous-ish)
   playTapSound();
 
-  // record timestamp
   const t = Date.now();
   if (!currentSession.createdAt) currentSession.createdAt = t;
   currentSession.timestamps.push(t);
   persistCurrent();
   updateUI();
 
-  // optional: update vibSupport text if it failed unexpectedly
   if (supportsVibrate && !vibOk) {
     document.getElementById('vibSupport').textContent = 'vibration: failed';
   }
@@ -279,42 +296,81 @@ function updateUI(){
   if (listPanel.classList.contains('open')) renderListPanel();
 }
 
-/* Event wiring
-   Prefer pointerdown (touch/mouse/stylus). Add touchstart fallback and click fallback.
-   Keep keyboard (Space/Enter) support.
-*/
-bigButton.addEventListener('pointerdown', (ev) => {
-  registerTapFromGesture('pointerdown');
-});
-// fallback for very old browsers
-bigButton.addEventListener('touchstart', (ev) => {
-  registerTapFromGesture('touchstart');
-}, {passive: true});
-// last-resort fallback (shouldn't double-fire thanks to debounce)
-bigButton.addEventListener('click', (ev) => {
-  registerTapFromGesture('click');
-});
-bigButton.addEventListener('keydown', (ev)=>{
-  if (ev.key === ' ' || ev.key === 'Enter') {
-    ev.preventDefault();
-    registerTapFromGesture('keydown');
-  }
-});
+/* Event wiring for taps (pointer/touch/click/keyboard) */
+bigButton.addEventListener('pointerdown', (ev) => { registerTapFromGesture('pointerdown'); });
+bigButton.addEventListener('touchstart', (ev) => { registerTapFromGesture('touchstart'); }, {passive:true});
+bigButton.addEventListener('click', (ev) => { registerTapFromGesture('click'); });
+bigButton.addEventListener('keydown', (ev)=>{ if (ev.key === ' ' || ev.key === 'Enter') { ev.preventDefault(); registerTapFromGesture('keydown'); } });
 
 saveBtn.addEventListener('click', downloadJSON);
 resetBtn.addEventListener('click', clearCurrent);
-listBtn.addEventListener('click', ()=>{
-  const isOpen = listPanel.classList.toggle('open');
-  listPanel.setAttribute('aria-hidden', !isOpen);
-  if (isOpen) renderListPanel();
-});
+listBtn.addEventListener('click', ()=>{ const isOpen = listPanel.classList.toggle('open'); listPanel.setAttribute('aria-hidden', !isOpen); if (isOpen) renderListPanel(); });
 closeList.addEventListener('click', ()=>{ listPanel.classList.remove('open'); listPanel.setAttribute('aria-hidden','true'); });
+
+/* PWA install handling */
+let deferredPrompt = null;
+
+// show install button only if browser triggers beforeinstallprompt OR if iOS we show hint on click
+installBtn.hidden = true; // hidden by default
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent automatic prompt and save the event for later
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.hidden = false;
+  // attach one-time click listener
+  installBtn.addEventListener('click', async function onInstallClick(ev){
+    if (deferredPrompt) {
+      // Show the native prompt
+      deferredPrompt.prompt();
+      try {
+        const choice = await deferredPrompt.userChoice;
+        // choice.outcome: "accepted" or "dismissed"
+        if (choice.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+      } catch(e){ /* ignore */ }
+      deferredPrompt = null;
+      installBtn.hidden = true;
+    } else if (isIOS) {
+      // fallback: show iOS hint
+      iosHint.classList.add('show');
+      iosHint.setAttribute('aria-hidden', 'false');
+    }
+    // remove this click listener to prevent duplicates
+    installBtn.removeEventListener('click', onInstallClick);
+  });
+});
+
+// If app is installed, hide button and clear deferred prompt
+window.addEventListener('appinstalled', (evt) => {
+  deferredPrompt = null;
+  installBtn.hidden = true;
+  console.log('PWA was installed.');
+});
+
+// If there was no beforeinstallprompt fired but the user is on iOS, show the install button so they can get instructions
+if (!('onbeforeinstallprompt' in window) && isIOS) {
+  // Reveal install button for iOS users (it will show the hint dialog when clicked)
+  installBtn.hidden = false;
+  installBtn.addEventListener('click', (ev)=>{
+    iosHint.classList.add('show');
+    iosHint.setAttribute('aria-hidden', 'false');
+  });
+}
+
+/* Close iOS hint */
+closeIosHint.addEventListener('click', ()=>{
+  iosHint.classList.remove('show');
+  iosHint.setAttribute('aria-hidden', 'true');
+});
 
 /* Init */
 loadCurrent();
 window.addEventListener('beforeunload', persistCurrent);
 </script>
-
 
 </body>
 </html>
