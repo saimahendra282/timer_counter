@@ -83,7 +83,7 @@ if ('serviceWorker' in navigator) {
 /* Keys */
 const KEY_CURRENT = 'pwacounter_current_v_sw';
 
-/* Elements */
+/* Elements (plus a small vib support indicator in the .meta area) */
 const bigButton = document.getElementById('bigButton');
 const countDisplay = document.getElementById('countDisplay');
 const sinceLast = document.getElementById('sinceLast');
@@ -94,8 +94,26 @@ const listBtn = document.getElementById('listBtn');
 const listPanel = document.getElementById('listPanel');
 const listContent = document.getElementById('listContent');
 const closeList = document.getElementById('closeList');
-
 let currentSession = { createdAt: null, timestamps: [] };
+
+/* Add small vibration-capability indicator inside .meta (if not already present) */
+(function ensureVibIndicator(){
+  const meta = document.querySelector('.meta');
+  if (!document.getElementById('vibSupport')) {
+    const span = document.createElement('div');
+    span.id = 'vibSupport';
+    span.style.marginLeft = '10px';
+    span.style.fontSize = '12px';
+    span.style.opacity = '0.9';
+    meta.appendChild(span);
+  }
+})();
+
+/* Feature detection */
+const supportsVibrate = !!(navigator && typeof navigator.vibrate === 'function');
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+document.getElementById('vibSupport').textContent =
+  supportsVibrate && !isIOS ? 'vibration: ok' : (isIOS ? 'vibration: not supported on iOS' : 'vibration: unavailable');
 
 /* Web Audio: one-shot short click tone */
 let audioCtx = null;
@@ -105,6 +123,7 @@ function ensureAudioContext() {
     if (!AC) return null;
     audioCtx = new AC();
   }
+  // resume may return a Promise; call it but don't await (must remain in gesture)
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume().catch(()=>{});
   }
@@ -118,6 +137,7 @@ function playTapSound() {
   const g = ctx.createGain();
   o.type = 'square';
   o.frequency.value = 1200;
+  // very short percussive envelope
   g.gain.setValueAtTime(0.0001, now);
   g.gain.exponentialRampToValueAtTime(0.5, now + 0.006);
   g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
@@ -127,16 +147,15 @@ function playTapSound() {
   o.onended = () => { try { o.disconnect(); g.disconnect(); } catch(e){} };
 }
 
-/* Vibration: short pattern, feature-detected */
+/* Vibration: call synchronously, short pattern */
 function doVibrate() {
-  // Only call vibration if the API exists. iOS Safari does not support it.
-  if (navigator && typeof navigator.vibrate === 'function') {
-    try {
-      // Short pattern: vibrate-pause-vibrate for a tactile "tap" feel
-      navigator.vibrate([20, 40, 20]);
-    } catch (e) {
-      // ignore any errors
-    }
+  if (!supportsVibrate || isIOS) return false;
+  try {
+    // pattern: vibrate - pause - vibrate to feel like a tap
+    navigator.vibrate([20, 40, 20]);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -168,25 +187,34 @@ function formatDuration(ms){
 function formatTimestamp(ms){ return new Date(ms).toLocaleString(); }
 
 /* Register tap: record timestamp, play sound, vibrate
-   Accepts an optional event so we can detect gesture type.
+   Keep all vibration/audio calls synchronous in the user gesture handler.
 */
-function registerTap(ev){
-  // ensureAudioContext is required to resume audio on first user gesture
-  ensureAudioContext();
+let _lastTrigger = 0; // debounce to avoid duplicate events (some platforms fire pointerdown+touchstart+click)
+function registerTapFromGesture(evType){
+  const nowMs = Date.now();
+  if (nowMs - _lastTrigger < 40) return; // ignore duplicates within 40ms
+  _lastTrigger = nowMs;
 
-  // Vibrate and play sound ONLY on actual user gestures (pointerdown / keyboard)
-  // If this was triggered by keyboard (ev && ev.type === 'keydown'), we still vibrate where supported.
-  doVibrate();
+  // Immediately trigger vibration (synchronous)
+  const vibOk = doVibrate();
+
+  // Trigger audio; resume will be attempted but not awaited (keeps it synchronous-ish)
   playTapSound();
 
+  // record timestamp
   const t = Date.now();
   if (!currentSession.createdAt) currentSession.createdAt = t;
   currentSession.timestamps.push(t);
   persistCurrent();
   updateUI();
+
+  // optional: update vibSupport text if it failed unexpectedly
+  if (supportsVibrate && !vibOk) {
+    document.getElementById('vibSupport').textContent = 'vibration: failed';
+  }
 }
 
-/* Build intervals for save: duration each count was active; last uses save-time */
+/* Build intervals for save */
 function buildIntervalsObjectForSave(){
   const ts = currentSession.timestamps;
   const out = {};
@@ -252,18 +280,24 @@ function updateUI(){
 }
 
 /* Event wiring
-   Use pointerdown for touch/mouse/stylus to trigger vibration reliably.
-   Keyboard (Space / Enter) is preserved via keydown handling.
+   Prefer pointerdown (touch/mouse/stylus). Add touchstart fallback and click fallback.
+   Keep keyboard (Space/Enter) support.
 */
 bigButton.addEventListener('pointerdown', (ev) => {
-  // pointerdown is a user gesture — register it
-  // Prevent multiple triggers if the browser also fires click — we've removed click listener entirely.
-  registerTap(ev);
+  registerTapFromGesture('pointerdown');
+});
+// fallback for very old browsers
+bigButton.addEventListener('touchstart', (ev) => {
+  registerTapFromGesture('touchstart');
+}, {passive: true});
+// last-resort fallback (shouldn't double-fire thanks to debounce)
+bigButton.addEventListener('click', (ev) => {
+  registerTapFromGesture('click');
 });
 bigButton.addEventListener('keydown', (ev)=>{
   if (ev.key === ' ' || ev.key === 'Enter') {
     ev.preventDefault();
-    registerTap(ev);
+    registerTapFromGesture('keydown');
   }
 });
 
@@ -280,6 +314,7 @@ closeList.addEventListener('click', ()=>{ listPanel.classList.remove('open'); li
 loadCurrent();
 window.addEventListener('beforeunload', persistCurrent);
 </script>
+
 
 </body>
 </html>
