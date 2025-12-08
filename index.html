@@ -72,7 +72,6 @@
     <div id="listContent" style="margin-bottom:8px;"><div class="muted">Tap the big button to record session. Durations shown are how long each count value was active.</div></div>
     <ol id="tapList" aria-live="polite"></ol>
   </aside>
-
 <script>
 /* Service worker registration (keeps PWA behavior) */
 if ('serviceWorker' in navigator) {
@@ -128,9 +127,17 @@ function playTapSound() {
   o.onended = () => { try { o.disconnect(); g.disconnect(); } catch(e){} };
 }
 
-/* Vibration: short pattern */
+/* Vibration: short pattern, feature-detected */
 function doVibrate() {
-  if (navigator.vibrate) navigator.vibrate(30);
+  // Only call vibration if the API exists. iOS Safari does not support it.
+  if (navigator && typeof navigator.vibrate === 'function') {
+    try {
+      // Short pattern: vibrate-pause-vibrate for a tactile "tap" feel
+      navigator.vibrate([20, 40, 20]);
+    } catch (e) {
+      // ignore any errors
+    }
+  }
 }
 
 /* Persistence helpers */
@@ -160,15 +167,22 @@ function formatDuration(ms){
 }
 function formatTimestamp(ms){ return new Date(ms).toLocaleString(); }
 
-/* Register tap: record timestamp, play sound, vibrate */
-function registerTap(){
-  ensureAudioContext(); // resume on first user gesture
+/* Register tap: record timestamp, play sound, vibrate
+   Accepts an optional event so we can detect gesture type.
+*/
+function registerTap(ev){
+  // ensureAudioContext is required to resume audio on first user gesture
+  ensureAudioContext();
+
+  // Vibrate and play sound ONLY on actual user gestures (pointerdown / keyboard)
+  // If this was triggered by keyboard (ev && ev.type === 'keydown'), we still vibrate where supported.
+  doVibrate();
+  playTapSound();
+
   const t = Date.now();
   if (!currentSession.createdAt) currentSession.createdAt = t;
   currentSession.timestamps.push(t);
   persistCurrent();
-  playTapSound();
-  doVibrate();
   updateUI();
 }
 
@@ -237,18 +251,35 @@ function updateUI(){
   if (listPanel.classList.contains('open')) renderListPanel();
 }
 
-/* Event wiring */
-bigButton.addEventListener('click', registerTap);
-bigButton.addEventListener('keydown', (ev)=>{ if (ev.key===' '||ev.key==='Enter'){ ev.preventDefault(); registerTap(); }});
+/* Event wiring
+   Use pointerdown for touch/mouse/stylus to trigger vibration reliably.
+   Keyboard (Space / Enter) is preserved via keydown handling.
+*/
+bigButton.addEventListener('pointerdown', (ev) => {
+  // pointerdown is a user gesture — register it
+  // Prevent multiple triggers if the browser also fires click — we've removed click listener entirely.
+  registerTap(ev);
+});
+bigButton.addEventListener('keydown', (ev)=>{
+  if (ev.key === ' ' || ev.key === 'Enter') {
+    ev.preventDefault();
+    registerTap(ev);
+  }
+});
+
 saveBtn.addEventListener('click', downloadJSON);
 resetBtn.addEventListener('click', clearCurrent);
-listBtn.addEventListener('click', ()=>{ const isOpen = listPanel.classList.toggle('open'); listPanel.setAttribute('aria-hidden', !isOpen); if (isOpen) renderListPanel(); });
+listBtn.addEventListener('click', ()=>{
+  const isOpen = listPanel.classList.toggle('open');
+  listPanel.setAttribute('aria-hidden', !isOpen);
+  if (isOpen) renderListPanel();
+});
 closeList.addEventListener('click', ()=>{ listPanel.classList.remove('open'); listPanel.setAttribute('aria-hidden','true'); });
 
 /* Init */
 loadCurrent();
 window.addEventListener('beforeunload', persistCurrent);
-
 </script>
+
 </body>
 </html>
