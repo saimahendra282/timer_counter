@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 1 Fitness & Diet Plan</title>
+  <style>
+    :root {
+      --primary: #ff6a00;
+      --dark: #111;
+      --card: #1c1c1c;
+      --text: #f5f5f5;
+      --muted: #aaa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0f0f0f, #1b1b1b);
+      color: var(--text);
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: radial-gradient(circle, #ff6a00, #ff4500);
+      color: #fff;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.9rem;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      padding: 16px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.35rem;
+    }
+
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section h3 {
+      margin: 10px 0;
+      font-size: 1.05rem;
+      color: #ffd2b3;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin: 8px 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,106,0,0.15);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+
+    .rule-ok { color: var(--success); }
+    .rule-stop { color: var(--danger); }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    @media (min-width: 768px) {
+      header h1 {
+        font-size: 2.3rem;
+      }
+      .card {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Week 1 Fitness & Diet Curriculum</h1>
+  <p>Restart Phase · Fat Loss · South Indian Hostel Friendly</p>
+</header>
+
+<div class="container">
+
+  <!-- MORNING -->
+  <div class="card">
+    <span class="badge">Morning · 50–60 min</span>
+    <h2>🔥 Fat Burn + Core</h2>
+
+    <div class="section">
+      <h3>Warm-up (10 min)</h3>
+      <ul>
+        <li>March in place – 3 min</li>
+        <li>Arm swings & circles – 2 min</li>
+        <li>Hip circles – 2 min</li>
+        <li>Easy squats – 15 reps</li>
+        <li>Light stretch – 1 min</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Cardio Block (20–30 min)</h3>
+      <ul>
+        <li>Fast marching – 2.5 min</li>
+        <li>Side steps – 2.5 min</li>
+        <li>Knee lifts – 2.5 min</li>
+        <li>Shadow boxing – 2.5 min</li>
+        <li><b>2 rounds (20 min)</b> · Optional 3 rounds</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Core & Stability (10 min)</h3>
+      <ul>
+        <li>Dead bug – 2 × 5 / side</li>
+        <li>Glute bridge – 2 × 10</li>
+        <li>Side plank (knees) – 15 sec / side</li>
+        <li>Bird dog (arm or leg) – 2 × 5 / side</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EVENING -->
+  <div class="card">
+    <span class="badge">Evening · 45–55 min</span>
+    <h2>🏋️ Strength (5 kg Dumbbells)</h2>
+
+    <div class="section">
+      <h3>Warm-up (7 min)</h3>
+      <ul>
+        <li>March in place – 2 min</li>
+        <li>Arm swings – 1 min</li>
+        <li>Hip openers – 2 min</li>
+        <li>Shoulder circles – 2 min</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Strength Training</h3>
+      <ul>
+        <li>Goblet squat – 3 × 8</li>
+        <li>DB Romanian deadlift – 2 × 10</li>
+        <li>One-arm DB row – 3 × 10 / arm</li>
+        <li>DB floor chest press – 3 × 8</li>
+        <li>Seated DB shoulder press – 2 × 8</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Post-Workout Rule</h3>
+      <ul>
+        <li><b>Eat protein within 45–60 min</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TRAINER SAFETY RULES -->
+  <div class="card">
+    <h2>⚠️ Trainer Safety Rules</h2>
+    <ul>
+      <li class="rule-ok">✔ Mild soreness = OK</li>
+      <li class="rule-stop">❌ Sharp pain = STOP immediately</li>
+      <li>✔ Don’t add extra exercises</li>
+      <li>✔ Sleep ≥ 7 hours daily</li>
+      <li>✔ Eat protein after evening workout</li>
+    </ul>
+  </div>
+
+  <!-- DIET -->
+  <div class="card">
+    <h2>🍽️ South Indian Hostel Diet (Must Eat)</h2>
+
+    <div class="section">
+      <h3>Breakfast</h3>
+      <ul>
+        <li>2 idli OR 1 dosa OR 1 cup upma</li>
+        <li>+ 2 whole eggs (boiled)</li>
+        <li>OR 1 cup sambar if eggs not available</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Lunch</h3>
+      <ul>
+        <li>Rice – <b>1 medium bowl only</b></li>
+        <li>Sambar / dal – 1 cup</li>
+        <li>Vegetable curry – 1 cup</li>
+        <li>Curd – ½ cup</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Evening Snack</h3>
+      <ul>
+        <li>1 fruit (banana / apple / orange)</li>
+        <li>OR boiled peanuts – 1 handful</li>
+        <li>Tea/coffee WITHOUT sugar</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Dinner (Light)</h3>
+      <ul>
+        <li>2 chapati OR 1 cup rice</li>
+        <li>Dal / sambar – 1 cup</li>
+        <li>Vegetable curry – 1 cup</li>
+        <li>OR 2 boiled eggs instead of rice</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Rules</h3>
+      <ul>
+        <li>❌ No fried snacks</li>
+        <li>❌ No sweets / soft drinks</li>
+        <li>✔ Drink 3–4 L water</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Week 1 Restart Plan · Follow Structure · Trust the Process
+</footer>
+
+</body>
+</html>
