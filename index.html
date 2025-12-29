@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Tap Timer</title>
+<title>Tap Timer — Responsive + List Panel</title>
 
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#007bff" />
@@ -20,128 +20,153 @@
   html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Helvetica Neue";}
   .shell{min-height:100vh;display:flex;flex-direction:column;align-items:stretch;}
 
-  .header {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 14px;
-    gap:12px;
-    z-index:10;
-    backdrop-filter: blur(6px);
-  }
-  .title { font-weight:700; font-size:16px; color:#111; }
+/* Top bar (compact) */
+.header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  gap:12px;
+  z-index:10;
+  backdrop-filter: blur(6px);
+}
+.title { font-weight:700; font-size:16px; color:#111; }
 
-  .controls { display:flex; gap:10px; align-items:center; }
-  .icon-btn {
-    width:44px; height:44px; border-radius:50%;
-    display:inline-grid; place-items:center;
-    border:none; background:transparent; cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease;
-    box-shadow: 0 4px 12px rgba(16,24,40,0.04);
-  }
-  .icon-btn:active{ transform: scale(.96); }
-  .icon-btn .ico { width:22px; height:22px; display:block; }
+/* Circular buttons in header */
+.controls { display:flex; gap:10px; align-items:center; }
+.icon-btn {
+  width:44px; height:44px; border-radius:50%;
+  display:inline-grid; place-items:center;
+  border:none; background:transparent; cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 4px 12px rgba(16,24,40,0.04);
+}
+.icon-btn:active{ transform: scale(.96); }
+.icon-btn .ico { width:22px; height:22px; display:block; }
 
-  .main {
-    display:flex;
-    flex:1;
-    align-items:center;
-    justify-content:center;
-    padding: 8px;
-    position:relative;
-  }
+/* Main area grows */
+.main {
+  display:flex;
+  flex:1;
+  align-items:center;
+  justify-content:center;
+  padding: 8px;
+  position:relative;
+}
 
-  #bigButton {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    user-select:none;
-    touch-action: manipulation;
-    border-radius:50%;
-    border: 8px solid rgba(0,0,0,0.12);
-    background: linear-gradient(180deg,#ffffff,#f2f6ff);
-    box-shadow: 0 20px 40px rgba(2,6,23,0.08);
-    font-weight:800;
-    color:#111;
-    width: min(86vmin, 520px);
-    height: min(86vmin, 520px);
-    max-width:92vw;
-    max-height:92vw;
-    font-size: clamp(28px, 9vmin, 92px);
-  }
+/* Big counter: as large as possible but constrained */
+#bigButton {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
+  touch-action: manipulation;
+  border-radius:50%;
+  border: 8px solid rgba(0,0,0,0.12);
+  background: linear-gradient(180deg,#ffffff,#f2f6ff);
+  box-shadow: 0 20px 40px rgba(2,6,23,0.08);
+  font-weight:800;
+  color:#111;
+  width: min(86vmin, 520px);    /* responsive: caps at 520px and uses viewport */
+  height: min(86vmin, 520px);
+  max-width:92vw;
+  max-height:92vw;
+  font-size: clamp(28px, 9vmin, 92px); /* responsive font size */
+}
 
-  .meta {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    display:flex;
-    gap:12px;
-    align-items:center;
-    color:var(--muted);
-    font-size:14px;
-    background: rgba(255,255,255,0.6);
-    padding:6px 10px;
-    border-radius:999px;
-    box-shadow: 0 6px 18px rgba(16,24,40,0.04);
-  }
+/* meta under the main button */
+.meta {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display:flex;
+  gap:12px;
+  align-items:center;
+  color:var(--muted);
+  font-size:14px;
+  background: rgba(255,255,255,0.6);
+  padding:6px 10px;
+  border-radius:999px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+}
 
-  #listPanel {
-    position: fixed;
-    right: 14px;
-    top: 74px;
-    bottom: 14px;
-    width: 340px;
-    max-width: calc(100% - 28px);
-    border-radius: 12px;
-    background: var(--panel-bg);
-    box-shadow: 0 20px 50px rgba(2,6,23,0.12);
-    overflow: auto;
-    padding: 12px;
-    z-index: 60;
-    transform: translateX(12px) scale(.995);
-    transition: opacity .18s ease, transform .18s ease;
-    opacity: 0;
-    pointer-events: none;
-  }
-  #listPanel.open { opacity:1; pointer-events:auto; transform:translateX(0) scale(1); }
-  #listPanel::-webkit-scrollbar { width:0; height:0; }
+/* Fixed right panel for list */
+#listPanel {
+  position: fixed;
+  right: 14px;
+  top: 74px;
+  bottom: 14px;
+  width: 340px;
+  max-width: calc(100% - 28px);
+  border-radius: 12px;
+  background: var(--panel-bg);
+  box-shadow: 0 20px 50px rgba(2,6,23,0.12);
+  overflow: auto; /* still scrollable, but scrollbar hidden with CSS below */
+  padding: 12px;
+  z-index: 60;
+  transform: translateX(12px) scale(.995);
+  transition: opacity .18s ease, transform .18s ease;
+  opacity: 0;
+  pointer-events: none;
+}
 
-  .panel-header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
-  .panel-title { font-weight:700; font-size:15px; }
+/* visible state */
+#listPanel.open { opacity: 1; pointer-events: auto; transform: translateX(0) scale(1); }
 
-  #tapList { list-style: decimal; padding-left:18px; margin:6px 0 12px 0; }
-  #tapList li { margin:10px 0; padding:8px; border-radius:8px; background:rgba(255,255,255,0.7); box-shadow:0 4px 10px rgba(2,6,23,0.04); }
+/* Hide scrollbars but keep scrolling ability */
+#listPanel::-webkit-scrollbar { width: 0; height: 0; }
+#listPanel { -ms-overflow-style: none; scrollbar-width: none; }
 
-  @media (max-width:900px){
-    #listPanel { right:10px; width:92%; top:84px; bottom:12px; }
-    #bigButton { width:min(86vmin,420px); height:min(86vmin,420px); }
-  }
+/* Panel header */
+.panel-header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
+.panel-title { font-weight:700; font-size:15px; }
 
-  #installBtn {
-    display:none;
-    position:fixed;
-    right:18px;
-    bottom:18px;
-    z-index:999;
-    padding:12px 14px;
-    border-radius:12px;
-    border:none;
-    background:var(--accent);
-    color:white;
-    font-weight:600;
-    box-shadow:0 8px 20px rgba(0,0,0,0.12);
-  }
+/* list styling */
+#tapList { list-style: decimal; padding-left:18px; margin:6px 0 12px 0; }
+#tapList li { margin:10px 0; padding:8px; border-radius:8px; background:rgba(255,255,255,0.7); box-shadow:0 4px 10px rgba(2,6,23,0.04); }
+.tap-ts { font-weight:600; font-size:13px; color:#111; }
+.tap-interval { font-size:13px; color:var(--muted); margin-top:4px; }
+
+/* small responsive tweaks */
+@media (max-width:900px){
+  #listPanel { right: 10px; width: 92%; top: 84px; bottom: 12px; }
+  .header { padding:10px; }
+  #bigButton { width: min(86vmin, 420px); height: min(86vmin, 420px); }
+}
+
+/* hide the built-in outline of buttons but keep focus-visible */
+.icon-btn:focus { outline: none; box-shadow: 0 6px 18px rgba(0,123,255,0.14); }
+
+/* mini helper for icon color */
+.ico-fill { fill: #111; }
+.ico-accent { fill: var(--accent); }
+
+/* subtle floating install button (kept from previous) */
+#installBtn {
+  display:none;
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:999;
+  padding:12px 14px;
+  border-radius:12px;
+  border:none;
+  background:var(--accent);
+  color:white;
+  font-weight:600;
+  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+}
 </style>
 </head>
 <body>
-<div class="shell">
-  <div class="header">
-    <div class="title">Tap Timer</div>
-          <button onclick="openPage()" style="width: auto; height: auto;">Save todays streak</button>
+  <div class="shell">
+    <div class="header">
+      <div class="title">Tap Timer</div>
+      <button onclick="openPage()" style="width: auto; height: auto;">Save todays streak</button>
+      <button onclick="openlan()" style="width: auto; height: auto;">workout for me</button>
 
-
-   <div class="controls" role="toolbar" aria-label="controls">
+      <div class="controls" role="toolbar" aria-label="controls">
         <!-- Save (download) -->
         <button id="saveBtn" class="icon-btn" title="Save and download JSON">
           <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path class="ico-fill" d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
@@ -157,208 +182,262 @@
           <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path class="ico-fill" d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H72c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H72c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H72c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z"/></svg>
         </button>
       </div>
-  </div>
+    </div>
 
-  <div class="main">
-    <div id="bigButton" tabindex="0">0</div>
-    <div class="meta">
-      <div>Clicks: <strong id="countDisplay">0</strong></div>
-      <div>Last interval: <span id="sinceLast">—</span></div>
+    <div class="main" role="main">
+      <div id="bigButton" role="button" tabindex="0" aria-label="Tap button">0</div>
+
+      <div class="meta" aria-hidden="false">
+        <div>Clicks: <strong id="countDisplay">0</strong></div>
+        <div>Last interval: <span id="sinceLast" class="muted">—</span></div>
+      </div>
     </div>
   </div>
-</div>
+  <!-- Fixed list panel (hidden by default) -->
+  <aside id="listPanel" aria-hidden="true" role="region" aria-label="Session list panel">
+    <div class="panel-header">
+      <div class="panel-title">Current session</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="closeList" class="icon-btn" title="Close list" aria-label="Close list">
+          <svg class="ico" viewBox="0 0 384 512"><path class="ico-fill" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+        </button>
+      </div>
+    </div>
 
-<aside id="listPanel">
-  <div class="panel-header">
-    <div class="panel-title">Current session</div>
-    <button id="closeList" class="icon-btn">
-      <svg class="ico" viewBox="0 0 384 512"><path class="ico-fill" d="M342.6 150.6..."/></svg>
-    </button>
-  </div>
-  <div id="listContent"><div class="muted">Tap the big button...</div></div>
-  <ol id="tapList"></ol>
-</aside>
+    <div id="listContent" style="margin-bottom:8px;">
+      <div class="muted">Tap the big button to record session. The durations shown are how long each count value was active.</div>
+    </div>
 
-<button id="installBtn">Install App</button>
+    <ol id="tapList" aria-live="polite"></ol>
+  </aside>
+
+  <button id="installBtn" title="Install app">Install App</button>
+  <!-- <a href=""></a> -->
+
+
+
 
 <script>
-  function openPage() {
-  window.location.href = './streak.html';
+/* ---------- PWA: service worker registration & install prompt handling ---------- */
+function openPage() {
+  window.location.href = './strak.html';
 }
-/* ------------------ SERVICE WORKER + INSTALL ------------------ */
+function openlan()
+{
+  window.location.href = './lan.html';
+}
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    try { await navigator.serviceWorker.register('/service-worker.js'); } catch(e){}
+    try {
+      await navigator.serviceWorker.register('/service-worker.js');
+      console.log('Service worker registered');
+    } catch (err) {
+      console.warn('Service worker registration failed:', err);
+    }
   });
 }
 
 let deferredPrompt = null;
 const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e)=>{
+window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   installBtn.style.display = 'block';
 });
-installBtn.addEventListener('click', async ()=>{
+installBtn.addEventListener('click', async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
+  const choice = await deferredPrompt.userChoice;
+  console.log('Install choice', choice && choice.outcome);
   installBtn.style.display = 'none';
   deferredPrompt = null;
 });
+window.addEventListener('appinstalled', () => {
+  installBtn.style.display = 'none';
+  console.log('App installed');
+});
 
-/* ------------------ APP LOGIC ------------------ */
+/* ---------- App logic ---------- */
 const KEY_CURRENT = 'pwacounter_current_v4';
+
 const bigButton = document.getElementById('bigButton');
 const countDisplay = document.getElementById('countDisplay');
 const sinceLast = document.getElementById('sinceLast');
 const tapList = document.getElementById('tapList');
 const saveBtn = document.getElementById('saveBtn');
 const resetBtn = document.getElementById('resetBtn');
+
 const listBtn = document.getElementById('listBtn');
 const listPanel = document.getElementById('listPanel');
 const listContent = document.getElementById('listContent');
 const closeList = document.getElementById('closeList');
 
-let currentSession = { createdAt:null, timestamps:[] };
+let currentSession = { createdAt: null, timestamps: [] };
+
+/* Helpers */
 function nowMs(){ return Date.now(); }
-
-/* ------------------ TAP SOUND + VIBRATION ------------------ */
-let __tapAudioCtx = null;
-function __ensureTapAudio() {
-  if (!__tapAudioCtx) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return null;
-    __tapAudioCtx = new AC();
+function persistCurrent(){ localStorage.setItem(KEY_CURRENT, JSON.stringify(currentSession)); }
+function loadCurrent(){
+  const raw = localStorage.getItem(KEY_CURRENT);
+  if (raw) {
+    try { currentSession = JSON.parse(raw) || { createdAt:null, timestamps:[] }; }
+    catch(e){ currentSession = { createdAt:null, timestamps:[] }; }
   }
-  if (__tapAudioCtx.state === 'suspended') __tapAudioCtx.resume().catch(()=>{});
-  return __tapAudioCtx;
-}
-function playTapSound() {
-  const ctx = __ensureTapAudio();
-  if (!ctx) return;
-  const now = ctx.currentTime;
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-  o.type = 'square';
-  o.frequency.value = 1200;
-  g.gain.setValueAtTime(0.001, now);
-  g.gain.exponentialRampToValueAtTime(0.45, now + 0.01);
-  g.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  o.connect(g).connect(ctx.destination);
-  o.start(now);
-  o.stop(now + 0.06);
-}
-
-function triggerVibration() {
-  try {
-    if (navigator.vibrate) navigator.vibrate([20,30,20]);
-  } catch(e){}
-}
-
-/* ------------------ REGISTER TAP (UPDATED) ------------------ */
-function registerTap(){
-  playTapSound();
-  triggerVibration();
-
-  const t = nowMs();
-  if (!currentSession.createdAt) currentSession.createdAt = t;
-  currentSession.timestamps.push(t);
-  localStorage.setItem(KEY_CURRENT, JSON.stringify(currentSession));
   updateUI();
 }
 
-/* ---------- ALL OTHER LOGIC UNCHANGED ---------- */
+/* formatters */
 function formatDuration(ms){
-  if (ms < 1000) return Math.round(ms)+' ms';
+  if (ms < 1000) return Math.round(ms) + ' ms';
   let s = Math.floor(ms/1000);
-  const d=Math.floor(s/86400); s%=86400;
-  const h=Math.floor(s/3600); s%=3600;
-  const m=Math.floor(s/60); const sec=s%60;
-  const out=[];
-  if(d)out.push(d+'d'); if(h)out.push(h+'h'); if(m)out.push(m+'m'); if(sec)out.push(sec+'s');
-  return out.join(' ')||'0s';
+  const days = Math.floor(s/86400); s %= 86400;
+  const hours = Math.floor(s/3600); s %= 3600;
+  const mins = Math.floor(s/60); const secs = s % 60;
+  const parts = [];
+  if (days) parts.push(days + 'd');
+  if (hours) parts.push(hours + 'h');
+  if (mins) parts.push(mins + 'm');
+  if (secs) parts.push(secs + 's');
+  return parts.join(' ') || '0s';
 }
-function formatTimestamp(ms){ return new Date(ms).toLocaleString(); }
-
-function updateUI(){
-  const ts=currentSession.timestamps;
-  const c=ts.length;
-  countDisplay.textContent=c;
-  bigButton.textContent=c;
-  if (!c) sinceLast.textContent='—';
-  else if (c>=2) sinceLast.textContent=formatDuration(ts[c-1]-ts[c-2]);
-  else sinceLast.textContent='first tap';
-  if (listPanel.classList.contains('open')) renderListPanel();
+function formatTimestamp(ms){
+  const d = new Date(ms);
+  return d.toLocaleString();
 }
 
-function renderListPanel(){
-  const ts=currentSession.timestamps;
-  const c=ts.length;
-  document.querySelector('.panel-title').textContent=`Current session — ${c} taps`;
-  tapList.innerHTML='';
-  if (!c){
-    listContent.innerHTML='<div class="muted">No taps recorded yet.</div>';
+/* register tap */
+function registerTap(){
+  const t = nowMs();
+  if (!currentSession.createdAt) currentSession.createdAt = t;
+  currentSession.timestamps.push(t);
+  persistCurrent();
+  updateUI();
+}
+
+/* build intervals per-count for download */
+function buildIntervalsObjectForSave(){
+  const ts = currentSession.timestamps;
+  const out = {};
+  if (!ts.length) return out;
+  const savedAt = nowMs();
+  for (let i=0;i<ts.length;i++){
+    const key = String(i+1);
+    if (i < ts.length - 1){
+      out[key] = formatDuration(ts[i+1] - ts[i]);
+    } else {
+      out[key] = formatDuration(savedAt - ts[i]);
+    }
+  }
+  return out;
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+/* download JSON */
+function downloadJSON(){
+  if (!currentSession.timestamps.length){
+    alert('No taps to save. Click the big button first.');
     return;
   }
-  listContent.innerHTML='';
-  for (let i=0;i<c;i++){
-    const li=document.createElement('li');
-    const t=ts[i];
-    const text=formatTimestamp(t);
-    let dur = (i < c-1) ? formatDuration(ts[i+1]-t) : formatDuration(nowMs()-t)+' (ongoing)';
-    li.innerHTML=`<div class="tap-ts">${i+1}. ${text}</div><div class="tap-interval">duration: ${dur}</div>`;
+  const firstTs = currentSession.createdAt || currentSession.timestamps[0] || Date.now();
+  const d = new Date(firstTs);
+  const yyyy = d.getFullYear();
+  const mm = pad2(d.getMonth()+1);
+  const dd = pad2(d.getDate());
+  const hh = pad2(d.getHours());
+  const mi = pad2(d.getMinutes());
+  const ss = pad2(d.getSeconds());
+  const filename = `${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.json`;
+  const payload = {
+    date: `${yyyy}-${mm}-${dd}`,
+    time: `${hh}:${mi}:${ss}`,
+    intervals: buildIntervalsObjectForSave()
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 2000);
+}
+
+/* Reset current session */
+function clearCurrent(){
+  if (!confirm('Clear current session? This will remove all recorded taps.')) return;
+  currentSession = { createdAt: null, timestamps: [] };
+  persistCurrent();
+  updateUI();
+}
+
+/* toggle list panel */
+function renderListPanel(){
+  // Populate descriptive header and list
+  const ts = currentSession.timestamps;
+  const count = ts.length;
+  const title = document.querySelector('#listPanel .panel-title');
+  title.textContent = `Current session — ${count} tap${count === 1 ? '' : 's'}`;
+  tapList.innerHTML = '';
+  if (!count){
+    listContent.innerHTML = '<div class="muted">No taps recorded yet. Tap the big button to start.</div>';
+    return;
+  }
+  listContent.innerHTML = '';
+  // Build list items: each item shows timestamp and duration that count was active
+  for (let i=0;i<count;i++){
+    const li = document.createElement('li');
+    const tsVal = ts[i];
+    const tsText = formatTimestamp(tsVal);
+    let intervalText;
+    if (i < count - 1){
+      intervalText = formatDuration(ts[i+1] - tsVal);
+    } else {
+      intervalText = formatDuration(nowMs() - tsVal) + ' (ongoing)';
+    }
+    li.innerHTML = `<div class="tap-ts">${i+1}. ${tsText}</div><div class="tap-interval">duration at ${i+1}: ${intervalText}</div>`;
     tapList.appendChild(li);
   }
 }
 
-function downloadJSON(){
-  const ts=currentSession.timestamps;
-  if (!ts.length){ alert('No taps recorded.'); return; }
-  const first = currentSession.createdAt;
-  const d=new Date(first);
-  const f=(n)=>String(n).padStart(2,'0');
-  const filename=`${d.getFullYear()}-${f(d.getMonth()+1)}-${f(d.getDate())}_${f(d.getHours())}-${f(d.getMinutes())}-${f(d.getSeconds())}.json`;
-  const payload={
-    date:`${d.getFullYear()}-${f(d.getMonth()+1)}-${f(d.getDate())}`,
-    time:`${f(d.getHours())}:${f(d.getMinutes())}:${f(d.getSeconds())}`,
-    intervals:(()=>{
-      const out={};
-      for(let i=0;i<ts.length;i++){
-        out[i+1]= (i<ts.length-1? formatDuration(ts[i+1]-ts[i]) : formatDuration(nowMs()-ts[i]));
-      }
-      return out;
-    })()
-  };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
-  const a=document.createElement('a'); a.href=url; a.download=filename; a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),1500);
+/* update UI */
+function updateUI(){
+  const ts = currentSession.timestamps;
+  const count = ts.length;
+  countDisplay.textContent = count;
+  bigButton.textContent = count;
+  // Update small meta
+  if (!count){
+    sinceLast.textContent = '—';
+  } else if (count >= 2){
+    sinceLast.textContent = formatDuration(ts[count-1] - ts[count-2]);
+  } else {
+    sinceLast.textContent = 'first tap';
+  }
+  // If the list panel is open, refresh it live
+  if (listPanel.classList.contains('open')) renderListPanel();
 }
 
-function clearCurrent(){
-  if (!confirm('Clear current session?')) return;
-  currentSession={createdAt:null,timestamps:[]};
-  localStorage.setItem(KEY_CURRENT,JSON.stringify(currentSession));
-  updateUI();
-}
+/* Events */
+bigButton.addEventListener('click', registerTap);
+bigButton.addEventListener('keydown', (ev)=>{ if (ev.key===' '||ev.key==='Enter'){ ev.preventDefault(); registerTap(); }});
+saveBtn.addEventListener('click', downloadJSON);
+resetBtn.addEventListener('click', clearCurrent);
 
-listBtn.addEventListener('click',()=>{ const o=listPanel.classList.toggle('open'); listPanel.setAttribute('aria-hidden',!o); if(o)renderListPanel(); });
-closeList.addEventListener('click',()=>{ listPanel.classList.remove('open'); });
+listBtn.addEventListener('click', ()=>{
+  const isOpen = listPanel.classList.toggle('open');
+  listPanel.setAttribute('aria-hidden', !isOpen);
+  if (isOpen) renderListPanel();
+});
+closeList.addEventListener('click', ()=>{
+  listPanel.classList.remove('open');
+  listPanel.setAttribute('aria-hidden', 'true');
+});
 
-bigButton.addEventListener('click',registerTap);
-bigButton.addEventListener('keydown',(e)=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault(); registerTap();}});
+/* init */
+loadCurrent();
+window.addEventListener('beforeunload', persistCurrent);
 
-saveBtn.addEventListener('click',downloadJSON);
-resetBtn.addEventListener('click',clearCurrent);
-
-(function load(){
-  try{
-    const raw=localStorage.getItem(KEY_CURRENT);
-    if(raw) currentSession=JSON.parse(raw)||currentSession;
-  }catch(e){}
-  updateUI();
-})();
 </script>
 </body>
 </html>
